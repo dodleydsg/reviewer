@@ -36,7 +36,7 @@ export default function Home() {
     if (pageDetails.detailModal) {
       detailModalRef.current?.showModal();
     }
-  },[pageDetails.currentPage]);
+  });
 
   const openModal = (modalId: "AddReview" | "ProductDetail") => {
     switch (modalId) {
