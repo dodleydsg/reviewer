@@ -9,7 +9,6 @@ export default function AddReviewForm() {
     setSubmitting(true);
     event.preventDefault();
     const formData = new FormData(event.target);
-    console.log(formData.get("productName"));
     addReview({
       productName: formData.get("productName"),
       rating: formData.get("rating"),

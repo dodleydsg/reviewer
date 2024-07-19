@@ -1,7 +1,7 @@
 import { makeRequest } from "./makeRequest";
 
-export function getReviews() {
-  return makeRequest("/reviews");
+export function getReviews(pageNum: number) {
+  return makeRequest(`/reviews?skip=${(pageNum - 1) * 10}`);
 }
 export function addReview(body) {
   return makeRequest("/reviews", {
@@ -19,5 +19,8 @@ export function getReview(id: string) {
 }
 
 export function updateReview(id: string, body) {
-  return makeRequest(`/reviews/${id}`, { method: "PUT", body: JSON.stringify(body) });
+  return makeRequest(`/reviews/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
 }

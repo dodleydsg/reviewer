@@ -1,4 +1,3 @@
-import Image1 from "../assets/images/image1.jpg";
 import Rating from "../components/Rating";
 import type { PageDetails } from "./Home";
 

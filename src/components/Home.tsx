@@ -6,6 +6,8 @@ import { useRef, useState } from "react";
 import AddReviewModal from "./modals/AddReviewModal";
 import { useAsync } from "../hooks/useAsync";
 import { getReviews } from "../services/review";
+import { useEffect } from "react";
+import Paginator from "./Paginator";
 
 export type PageDetails = {
   currentPage: number;
@@ -30,6 +32,12 @@ export default function Home() {
     addReviewModal: false,
   });
 
+  useEffect(() => {
+    if (pageDetails.detailModal) {
+      detailModalRef.current?.showModal();
+    }
+  },[pageDetails.currentPage]);
+
   const openModal = (modalId: "AddReview" | "ProductDetail") => {
     switch (modalId) {
       case "AddReview":
@@ -43,7 +51,8 @@ export default function Home() {
     }
   };
 
-  const { loading, error, value } = useAsync(getReviews);
+  const { loading, error, value } = useAsync(() =>
+    getReviews(pageDetails.currentPage), [pageDetails.currentPage]);
   // Reads reviews from backand and populates reviews
   if (loading) {
     return <h1>Loading</h1>;
@@ -55,10 +64,6 @@ export default function Home() {
 
   if (!value) {
     return <h1>Couldn't load reviews</h1>;
-  }
-
-  if (pageDetails.detailModal) {
-    openModal("ProductDetail");
   }
 
   return (
@@ -142,13 +147,12 @@ export default function Home() {
           </div>
         </div>
         <div className="flex justify-center">
-          <div className="join ">
-            <button className="join-item btn">1</button>
-            {/* Using pageDetails.pageNumber you can set the active page accordingly */}
-            <button className="join-item btn btn-active">2</button>
-            <button className="join-item btn">3</button>
-            <button className="join-item btn">4</button>
-          </div>
+          <Paginator
+            setPageDetails={setPageDetails}
+            pageDetails={pageDetails}
+            count={value?.count}
+            max={10}
+          />
         </div>
       </div>
     </>

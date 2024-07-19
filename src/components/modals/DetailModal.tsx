@@ -55,7 +55,7 @@ const DetailModal = forwardRef(function DetailModal(
                 </button>
               </div>
               <form method="dialog">
-                <button className="btn btn-neutral">
+                <button className="btn btn-neutral" onClick={() => setPageDetails({...pageDetails, detailModal:false})}>
                   <IoClose />
                 </button>
               </form>

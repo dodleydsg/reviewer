@@ -7,7 +7,7 @@ type OptionsType = {
 };
 
 export function makeRequest(url: string, options?: OptionsType) {
-  return fetch(BASE_URL + url, options)
+  return fetch(BASE_URL + url, {...options, headers: {"Content-Type": "application/json"}})
     .then((res) => res.json())
     .then((data) => data)
     .catch((error) =>
