@@ -1,8 +1,18 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 
 // used from my previous projects and didn't want to start adjusting the types for the typescript version
 
-export function useAsyncFn(func, dependencies = []) {
+export function useAsync(func, dependencies = []) {
+  const { execute, ...state } = useAsyncInternal(func, dependencies, true);
+
+  useEffect(() => {
+    execute();
+  }, [execute]);
+
+  return state;
+}
+
+export function useAsyncFn(func, dependencies: [] = []) {
   return useAsyncInternal(func, dependencies, false);
 }
 

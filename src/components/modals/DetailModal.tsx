@@ -1,25 +1,26 @@
-import { PageDetails, ReviewType } from "../Home";
+import { PageDetails, type ReviewType } from "../Home";
 import Rating from "../Rating";
-import React, { forwardRef } from "react";
-import { useAsyncFn } from "../../hooks/useAsync";
-import { getReview } from "../../services/review";
+import React, { forwardRef, useState } from "react";
+import { useAsync } from "../../hooks/useAsync";
+import { deleteReview, getReview } from "../../services/review";
 import { IoClose, IoTrash } from "react-icons/io5";
 import UpdateReviewForm from "../Forms/UpdateReviewForm";
 type DetailModalProps = {
   pageDetails: PageDetails;
+  setPageDetails;
 };
 
 const DetailModal = forwardRef(function DetailModal(
-  { pageDetails }: DetailModalProps,
+  { pageDetails, setPageDetails }: DetailModalProps,
   ref: React.ForwardedRef<HTMLDialogElement>
 ) {
-  type AsyncState = {
-    loading: boolean;
-    error?: string | null;
-    value?: { review?: ReviewType };
-  };
-  const { loading, error, value }: AsyncState = useAsyncFn(
-    getReview(pageDetails.currentReview)
+  const {
+    loading,
+    error,
+    value: review,
+  } = useAsync(
+    () => getReview(pageDetails.currentReview),
+    [pageDetails.currentReview]
   );
 
   if (loading) {
@@ -32,12 +33,24 @@ const DetailModal = forwardRef(function DetailModal(
   return (
     <>
       <dialog ref={ref} className="modal">
-        <div className="modal-box">
+        <div className="modal-box space-y-4">
           <div className="flex justify-between">
             <h5 className="text-2xl font-medium">Product Details</h5>
             <div className="flex gap-4">
               <div className="tooltip" data-tip="Delete review">
-                <button className="btn btn-error">
+                <button
+                  className="btn btn-error"
+                  onClick={() => {
+                    deleteReview(review?._id).then((data) => {
+                      if (data.error) {
+                        console.log(error);
+                      } else {
+                        alert("Successfully deleted product");
+                        setPageDetails({ ...pageDetails, detailModal: false });
+                      }
+                    });
+                  }}
+                >
                   <IoTrash />
                 </button>
               </div>
@@ -48,17 +61,29 @@ const DetailModal = forwardRef(function DetailModal(
               </form>
             </div>
           </div>
-          <div className="">
-            <div>{/* Image here */}</div>
+          <div className="space-y-4">
             <div>
-              <p>Title: {value?.review.title}</p>
+              <img
+                className="object-cover rounded-2xl"
+                src={review?.image}
+              ></img>
+            </div>
+            <div>
+              <p>Product name: {review?.productName}</p>
               <div>
-                Rating: <Rating score={value?.review?.score || 1.2} />{" "}
+                Rating: <Rating rating={review?.rating || 1.2} />
               </div>
-              <div>Description: {value?.review?.description}</div>
+              <div>Description: {review?.reviewText}</div>
             </div>
             <h6 className="font-bold">Update Review</h6>
-            <UpdateReviewForm />
+            <UpdateReviewForm
+              id={review?._id}
+              data={{
+                productName: review?.productName,
+                rating: review?.rating,
+                reviewText: review?.reviewText,
+              }}
+            />
           </div>
         </div>
       </dialog>

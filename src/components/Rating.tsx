@@ -1,8 +1,8 @@
 import { IoStar, IoStarHalf } from "react-icons/io5";
 
-export default function Rating({ score }: { score: number }) {
-  const fScore = score > 5 ? 5 : Math.floor(score);
-  const rest = fScore >= 5 ? 0 : score - fScore;
+export default function Rating({ rating }: { rating: number }) {
+  const fScore = rating > 5 ? 5 : Math.floor(rating);
+  const rest = fScore >= 5 ? 0 : rating - fScore;
   return (
     <div className="flex items-center gap-2">
       {Array(fScore)
@@ -17,7 +17,7 @@ export default function Rating({ score }: { score: number }) {
               <IoStarHalf key={idx} className="text-yellow-500" />
             ))
         : null}
-      ({score})
+      ({rating})
     </div>
   );
 }

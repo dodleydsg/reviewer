@@ -3,18 +3,21 @@ import { makeRequest } from "./makeRequest";
 export function getReviews() {
   return makeRequest("/reviews");
 }
-export function addtReview() {
-  return makeRequest("/reviews", { method: "post" });
+export function addReview(body) {
+  return makeRequest("/reviews", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 
 export function deleteReview(id: string) {
-  return makeRequest(`/reviews/${id}`, { method: "delete" });
+  return makeRequest(`/reviews/${id}`, { method: "DELETE" });
 }
 
 export function getReview(id: string) {
-  return makeRequest(`/reviews/${id}`, { method: "get" });
+  return makeRequest(`/reviews/${id}`, { method: "GET" });
 }
 
-export function updateReview(id: string) {
-  return makeRequest(`/reviews/${id}`, { method: "put" });
+export function updateReview(id: string, body) {
+  return makeRequest(`/reviews/${id}`, { method: "PUT", body: JSON.stringify(body) });
 }

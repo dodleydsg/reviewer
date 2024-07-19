@@ -2,9 +2,9 @@ import { IoSearch } from "react-icons/io5";
 import DetailModal from "./modals/DetailModal";
 import Header from "./Header";
 import ProductCard from "./ProductCard";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import AddReviewModal from "./modals/AddReviewModal";
-import { useAsyncFn } from "../hooks/useAsync";
+import { useAsync } from "../hooks/useAsync";
 import { getReviews } from "../services/review";
 
 export type PageDetails = {
@@ -15,9 +15,10 @@ export type PageDetails = {
 };
 
 export type ReviewType = {
-  title: string;
-  score: number;
-  description: string;
+  productName: string;
+  rating: number;
+  reviewText: string;
+  id?: string;
 };
 export default function Home() {
   const addReviewModalRef = useRef<HTMLDialogElement>(null);
@@ -28,15 +29,6 @@ export default function Home() {
     detailModal: false,
     addReviewModal: false,
   });
-
-  useEffect(() => {
-    if (pageDetails.detailModal) {
-      detailModalRef.current?.showModal();
-    }
-  });
-
-  const { loading, error, value: reviews } = useAsyncFn(getReviews);
-  // Reads reviews from backand and populates reviews
 
   const openModal = (modalId: "AddReview" | "ProductDetail") => {
     switch (modalId) {
@@ -51,9 +43,31 @@ export default function Home() {
     }
   };
 
+  const { loading, error, value } = useAsync(getReviews);
+  // Reads reviews from backand and populates reviews
+  if (loading) {
+    return <h1>Loading</h1>;
+  }
+
+  if (error) {
+    return <h1>Couldn't load reviews</h1>;
+  }
+
+  if (!value) {
+    return <h1>Couldn't load reviews</h1>;
+  }
+
+  if (pageDetails.detailModal) {
+    openModal("ProductDetail");
+  }
+
   return (
     <>
-      <DetailModal ref={detailModalRef} pageDetails={pageDetails} />
+      <DetailModal
+        ref={detailModalRef}
+        setPageDetails={setPageDetails}
+        pageDetails={pageDetails}
+      />
       <AddReviewModal ref={addReviewModalRef} />
       <div className="space-y-20">
         <Header openModal={openModal} />
@@ -100,21 +114,30 @@ export default function Home() {
               </div>
             </div>
             <div className="md:col-span-5 col-span-1 grid md:grid-cols-5 grid-cols-2 gap-2 grow-0">
-              {/* Map reviews here to set  */}
-              {/* {reviews.map((val, idx) => {
-                return (
-                  <ProductCard
-                    pageDetails={pageDetails}
-                    setPageDetails={setPageDetails}
-                    product={{ rating: val.rating, title: val.title }}
-                  />
-                );
-              })} */}
-              <ProductCard
-                pageDetails={pageDetails}
-                setPageDetails={setPageDetails}
-                product={{ rating: 2.5, title: "Sony" }}
-              />
+              {value?.productReviews.map(
+                (review: {
+                  _id: string;
+                  rating: number;
+                  productName: string;
+                  createdAt: string;
+                  image: string;
+                }) => {
+                  return (
+                    <ProductCard
+                      key={review._id}
+                      pageDetails={pageDetails}
+                      setPageDetails={setPageDetails}
+                      product={{
+                        id: review._id,
+                        rating: review.rating,
+                        productName: review.productName,
+                        createdAt: review.createdAt,
+                        image: review.image,
+                      }}
+                    />
+                  );
+                }
+              )}
             </div>
           </div>
         </div>

@@ -3,10 +3,11 @@ import Rating from "../components/Rating";
 import type { PageDetails } from "./Home";
 
 type ProductProps = {
-  title?: string;
+  productName?: string;
   rating: number;
-  price?: number;
+  createdAt?: string;
   image?: string;
+  id: string;
 };
 
 export default function ProductCard({
@@ -21,22 +22,23 @@ export default function ProductCard({
 }) {
   return (
     <div
-      onClick={() =>
+      onClick={() => {
         setPageDetails({
           ...pageDetails,
-          addReviewModal: false,
+          currentReview: product.id,
           detailModal: true,
-          currentReview: "1",
-        })
-      }
+        });
+      }}
       //current product refers to the product that currently displayed over the modal
       className="h-min cursor-pointer hover:scale-95 transition-all duration-200"
     >
-      <img src={Image1} className=" rounded-sm object-cover w-full" />
+      <img src={product.image} className=" rounded-sm object-cover w-full" />
 
       <div className="flex flex-col items-center space-y-2">
-        <p className="font-uppercase text-sm font-medium">{product.title}</p>
-        <Rating score={product.rating} />
+        <p className="font-uppercase text-sm font-medium">
+          {product.productName}
+        </p>
+        <Rating rating={product.rating} />
       </div>
     </div>
   );
